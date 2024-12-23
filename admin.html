@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JACK STORE Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+        }
+
+        .login-container,
+        .admin-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .login-form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 100px auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .price-table {
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-collapse: collapse;
+        }
+
+        .price-table th,
+        .price-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .price-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            background: #2ecc71;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: #27ae60;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .edit-btn {
+            background: #3498db;
+            margin-right: 5px;
+        }
+
+        .edit-btn:hover {
+            background: #2980b9;
+        }
+
+        .save-btn {
+            background: #2ecc71;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="loginForm" class="login-container">
+        <form class="login-form" onsubmit="login(event)">
+            <h2 style="margin-bottom: 20px;">Admin Login</h2>
+            <div>
+                <input type="text" id="username" placeholder="Username" required>
+            </div>
+            <div>
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <div id="loginError" class="error-message hidden"></div>
+            <button type="submit" style="width: 100%; margin-top: 20px;">Login</button>
+        </form>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="admin-container hidden">
+        <div class="admin-header">
+            <h1>Diamond Package Management</h1>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        <table class="price-table">
+            <thead>
+                <tr>
+                    <th>Package ID</th>
+                    <th>Price ($)</th>
+                    <th>Diamonds</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="priceTableBody">
+                <!-- Table rows will be populated dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Hardcoded admin credentials (in real-world, this should be server-side)
+        const ADMIN_CREDENTIALS = {
+            username: 'admin',
+            password: 'jackstore2024'
+        };
+
+        // Initial packages data
+        let packagesData = [
+            { id: 1, price: '1.05', diamonds: '86' },
+            { id: 2, price: '2.05', diamonds: '172' },
+            // ... add all your existing packages
+        ];
+
+        function login(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginError = document.getElementById('loginError');
+
+            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                renderPriceTable();
+            } else {
+                loginError.textContent = 'Invalid credentials';
+                loginError.classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('loginError').classList.add('hidden');
+        }
+
+        function renderPriceTable() {
+            const tableBody = document.getElementById('priceTableBody');
+            tableBody.innerHTML = '';
+
+            packagesData.forEach(package => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${package.id}</td>
+                    <td>
+                        <span class="display-value">${package.price}</span>
+                        <input type="number" class="edit-input hidden" value="${package.price}" step="0.01">
+                    </td>
+                    <td>
+                        <span class="display-value">${package.diamonds}</span>
+                        <input type="number" class="edit-input hidden" value="${package.diamonds}">
+                    </td>
+                    <td>
+                        <button class="edit-btn" onclick="toggleEdit(this)">Edit</button>
+                        <button class="save-btn hidden" onclick="saveChanges(this)">Save</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function toggleEdit(button) {
+            const row = button.closest('tr');
+            const displayValues = row.querySelectorAll('.display-value');
+            const editInputs = row.querySelectorAll('.edit-input');
+            const saveBtn = row.querySelector('.save-btn');
+
+            displayValues.forEach(val => val.classList.toggle('hidden'));
+            editInputs.forEach(input => input.classList.toggle('hidden'));
+            button.classList.toggle('hidden');
+            saveBtn.classList.toggle('hidden');
+        }
+
+        function saveChanges(button) {
+            const row = button.closest('tr');
+            const id = parseInt(row.cells[0].textContent);
+            const newPrice = row.querySelector('.edit-input').value;
+            const newDiamonds = row.querySelectorAll('.edit-input')[1].value;
+
+            // Update the data
+            const package = packagesData.find(p => p.id === id);
+            if (package) {
+                package.price = newPrice;
+                package.diamonds = newDiamonds;
+            }
+
+            // Update the display
+            row.cells[1].querySelector('.display-value').textContent = newPrice;
+            row.cells[2].querySelector('.display-value').textContent = newDiamonds;
+
+            // Toggle back to display mode
+            toggleEdit(row.querySelector('.edit-btn'));
+
+            // Here you would typically save to a backend database
+            console.log('Updated package:', { id, price: newPrice, diamonds: newDiamonds });
+        }
+    </script>
+</body>
+</html>
