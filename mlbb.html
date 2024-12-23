@@ -456,11 +456,11 @@ async function payment() {
     const payload = {
       type: "personal",
       data: {
-        bakongAccountID: "lowin@aclb",
+        bakongAccountID: "brendan_malis7@wing",
         accName: "JACK STORE",
         accountInformation: "brendan_malis7@wing",
         currency: "USD",
-        amount: amount,
+        amount: parseFloat(amount),
         address: "Phnom Penh"
       }
     };
@@ -531,13 +531,13 @@ function autoCheckPayment() {
         const items = selectedRadio ? selectedRadio.value : '';
 
         // Send order to Telegram
-       // const telegramSuccess = await sendTelegramOrder(userId, zoneId, items);
+       const telegramSuccess = await sendTelegramOrder(userId, zoneId, items);
 
-        // if (telegramSuccess) {
-        //   alert('Payment Confirmed And Order Sent Successfully✅');
-        // } else {
-        //   alert('Payment Confirmed But Failed To Send Order, Please Contact Support❌');
-        // }
+        if (telegramSuccess) {
+           alert('Payment Confirmed And Order Sent Successfully✅');
+         } else {
+           alert('Payment Confirmed But Failed To Send Order, Please Contact Support❌');
+         }
 
         closeQRModal();
         location.reload(); // Refresh page after successful payment
