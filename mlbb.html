@@ -523,7 +523,7 @@ function autoCheckPayment() {
 
       if (result.status === "success") {
         clearInterval(interval);
-        // Get order details for Telegram
+
         const userId = document.getElementById('userid').value;
         const zoneId = document.getElementById('zoneid').value;
         const selectedRadio = document.querySelector('input[name="radio"]:checked');
