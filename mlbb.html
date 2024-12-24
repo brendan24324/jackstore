@@ -523,7 +523,6 @@ function autoCheckPayment() {
 
       if (result.status === "success") {
         clearInterval(interval);
-        alert('Payment Confirmed✅');
         // Get order details for Telegram
         const userId = document.getElementById('userid').value;
         const zoneId = document.getElementById('zoneid').value;
